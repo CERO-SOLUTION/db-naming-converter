@@ -9,6 +9,9 @@ export type DictionaryMeta = {
 
 export type StandardEntry = {
   abbr: string;
+  englishName: string;
+  description: string;
+  domainName: string;
   isFormat: boolean;
   rowNo: number;
   numberCol: string;

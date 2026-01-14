@@ -15,13 +15,20 @@ export type TokenResult = {
   normalized: string;
   output: string;
   kind: TokenKind;
+  numberCol?: string;
   standard?: string;
   abbr?: string;
+  englishName?: string;
+  description?: string;
+  domainName?: string;
+  synonymList?: string[];
+  forbiddenList?: string[];
   isFormat?: boolean;
 };
 
 export type ConvertResult = {
   output: string;
+  description: string;
   warnings: Warning[];
   tokens: TokenResult[];
   meta?: DictionaryMeta;
@@ -39,6 +46,21 @@ export function convertInput(input: string, dict: NormalizedDictionary): Convert
   const tokens: TokenResult[] = [];
   const warnings: Warning[] = [];
   const outputTokens: string[] = [];
+  const descriptionTokens: string[] = [];
+  const synonymListMap = new Map<string, string[]>();
+  const forbiddenListMap = new Map<string, string[]>();
+
+  Object.entries(dict.synonym ?? {}).forEach(([token, entry]) => {
+    const list = synonymListMap.get(entry.standard) ?? [];
+    list.push(token);
+    synonymListMap.set(entry.standard, list);
+  });
+
+  Object.entries(dict.forbidden ?? {}).forEach(([token, entry]) => {
+    const list = forbiddenListMap.get(entry.standard) ?? [];
+    list.push(token);
+    forbiddenListMap.set(entry.standard, list);
+  });
 
   const rawTokens = input.split("_");
 
@@ -65,10 +87,17 @@ export function convertInput(input: string, dict: NormalizedDictionary): Convert
         normalized,
         output: abbr,
         kind: "forbidden",
+        numberCol: standardEntry?.numberCol,
         standard: standardName,
         abbr,
+        englishName: standardEntry?.englishName,
+        description: standardEntry?.description,
+        domainName: standardEntry?.domainName,
+        synonymList: synonymListMap.get(standardName),
+        forbiddenList: forbiddenListMap.get(standardName),
         isFormat: standardEntry?.isFormat ?? false
       });
+      descriptionTokens.push(standardEntry?.englishName ?? standardName ?? trimmed);
       outputTokens.push(abbr.toLowerCase());
       return;
     }
@@ -81,10 +110,17 @@ export function convertInput(input: string, dict: NormalizedDictionary): Convert
         normalized,
         output: entry.abbr,
         kind: "standard",
+        numberCol: entry.numberCol,
         standard,
         abbr: entry.abbr,
+        englishName: entry.englishName,
+        description: entry.description,
+        domainName: entry.domainName,
+        synonymList: synonymListMap.get(standard),
+        forbiddenList: forbiddenListMap.get(standard),
         isFormat: entry.isFormat
       });
+      descriptionTokens.push(entry.englishName ?? standard);
       outputTokens.push(entry.abbr.toLowerCase());
       return;
     }
@@ -101,10 +137,17 @@ export function convertInput(input: string, dict: NormalizedDictionary): Convert
         normalized,
         output: abbr,
         kind: "synonym",
+        numberCol: standardEntry?.numberCol,
         standard: standardName,
         abbr,
+        englishName: standardEntry?.englishName,
+        description: standardEntry?.description,
+        domainName: standardEntry?.domainName,
+        synonymList: synonymListMap.get(standardName),
+        forbiddenList: forbiddenListMap.get(standardName),
         isFormat: standardEntry?.isFormat ?? false
       });
+      descriptionTokens.push(standardEntry?.englishName ?? standardName ?? trimmed);
       outputTokens.push(abbr.toLowerCase());
       return;
     }
@@ -117,6 +160,7 @@ export function convertInput(input: string, dict: NormalizedDictionary): Convert
       output: fallback,
       kind: "unknown"
     });
+    descriptionTokens.push(trimmed);
     outputTokens.push(fallback);
   });
 
@@ -131,6 +175,7 @@ export function convertInput(input: string, dict: NormalizedDictionary): Convert
 
   return {
     output: outputTokens.join("_").toLowerCase(),
+    description: descriptionTokens.join("_"),
     warnings,
     tokens,
     meta: dict.meta

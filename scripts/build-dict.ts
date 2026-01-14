@@ -4,6 +4,9 @@ import xlsx from "xlsx";
 
 type StandardEntry = {
   abbr: string;
+  englishName: string;
+  description: string;
+  domainName: string;
   isFormat: boolean;
   rowNo: number;
   numberCol: string;
@@ -39,7 +42,10 @@ const REQUIRED_HEADERS = [
   "번호",
   "공통표준단어명",
   "공통표준단어영문약어명",
+  "공통표준단어영문명",
+  "공통표준단어설명",
   "형식단어여부",
+  "공통표준도메인분류명",
   "이음동의어목록",
   "금칙어목록"
 ];
@@ -109,7 +115,10 @@ function main(): void {
   const idxNumber = headerIndex.get("번호") as number;
   const idxStandard = headerIndex.get("공통표준단어명") as number;
   const idxAbbr = headerIndex.get("공통표준단어영문약어명") as number;
+  const idxEnglish = headerIndex.get("공통표준단어영문명") as number;
+  const idxDescription = headerIndex.get("공통표준단어설명") as number;
   const idxFormat = headerIndex.get("형식단어여부") as number;
+  const idxDomain = headerIndex.get("공통표준도메인분류명") as number;
   const idxSynonym = headerIndex.get("이음동의어목록") as number;
   const idxForbidden = headerIndex.get("금칙어목록") as number;
 
@@ -130,7 +139,10 @@ function main(): void {
     const numberCol = toTrimmedString(row[idxNumber]);
     const standard = toTrimmedString(row[idxStandard]);
     const abbr = toTrimmedString(row[idxAbbr]).toLowerCase();
+    const englishName = toTrimmedString(row[idxEnglish]);
+    const description = toTrimmedString(row[idxDescription]);
     const isFormat = toTrimmedString(row[idxFormat]).toUpperCase() === "Y";
+    const domainName = toTrimmedString(row[idxDomain]);
 
     if (!standard) {
       continue;
@@ -139,6 +151,9 @@ function main(): void {
     const entry: StandardRowEntry = {
       standard,
       abbr,
+      englishName,
+      description,
+      domainName,
       isFormat,
       rowNo,
       numberCol
@@ -228,6 +243,9 @@ function main(): void {
         const chosenEntry = overrideEntries[0];
         standardMap[standard] = {
           abbr: chosenEntry.abbr,
+          englishName: chosenEntry.englishName,
+          description: chosenEntry.description,
+          domainName: chosenEntry.domainName,
           isFormat: chosenEntry.isFormat,
           rowNo: chosenEntry.rowNo,
           numberCol: chosenEntry.numberCol
@@ -244,6 +262,9 @@ function main(): void {
       const fallbackEntry = entries[0];
       standardMap[standard] = {
         abbr: fallbackEntry.abbr,
+        englishName: fallbackEntry.englishName,
+        description: fallbackEntry.description,
+        domainName: fallbackEntry.domainName,
         isFormat: fallbackEntry.isFormat,
         rowNo: fallbackEntry.rowNo,
         numberCol: fallbackEntry.numberCol
@@ -260,6 +281,9 @@ function main(): void {
     const primary = entries[0];
     standardMap[standard] = {
       abbr: primary.abbr,
+      englishName: primary.englishName,
+      description: primary.description,
+      domainName: primary.domainName,
       isFormat: primary.isFormat,
       rowNo: primary.rowNo,
       numberCol: primary.numberCol

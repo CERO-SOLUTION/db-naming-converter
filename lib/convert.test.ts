@@ -5,10 +5,42 @@ import { normalizeDictionary, type Dictionary } from "./dict-utils";
 const rawDictionary: Dictionary = {
   meta: { source: "test.xlsx", sheet: "DB" },
   standard: {
-    통계: { abbr: "stats", isFormat: false, rowNo: 2, numberCol: "1" },
-    일시: { abbr: "dt", isFormat: true, rowNo: 3, numberCol: "2" },
-    메시지: { abbr: "msg", isFormat: false, rowNo: 4, numberCol: "3" },
-    IP: { abbr: "ip", isFormat: false, rowNo: 5, numberCol: "4" }
+    통계: {
+      abbr: "stats",
+      englishName: "statistics",
+      description: "/ui stats",
+      domainName: "common",
+      isFormat: false,
+      rowNo: 2,
+      numberCol: "1"
+    },
+    일시: {
+      abbr: "dt",
+      englishName: "date time",
+      description: "date time",
+      domainName: "common",
+      isFormat: true,
+      rowNo: 3,
+      numberCol: "2"
+    },
+    메시지: {
+      abbr: "msg",
+      englishName: "message",
+      description: "message text",
+      domainName: "common",
+      isFormat: false,
+      rowNo: 4,
+      numberCol: "3"
+    },
+    IP: {
+      abbr: "ip",
+      englishName: "ip",
+      description: "ip address",
+      domainName: "network",
+      isFormat: false,
+      rowNo: 5,
+      numberCol: "4"
+    }
   },
   synonym: {
     아이피: { standard: "IP" }

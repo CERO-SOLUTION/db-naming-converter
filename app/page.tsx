@@ -10,6 +10,14 @@ const WARNING_LABELS: Record<WarningType, string> = {
   "format-position": "형식단어 위치"
 };
 
+const WARNING_DESCRIPTIONS: Record<WarningType, string> = {
+  forbidden: "금칙어 목록에 있는 단어가 입력에 포함된 경우. 표준단어로 자동 교정되어 변환됨.",
+  synonym: "표준단어의 동의어가 입력된 경우. 표준단어로 매핑되어 변환됨.",
+  unknown: "사전에 없는 단어가 입력된 경우. 결과는 unk로 치환됨.",
+  "format-position":
+    "형식단어(형식단어여부=Y)가 마지막 토큰이 아닌 위치에 있을 때 경고."
+};
+
 function uniqueTokens(tokens: string[]): string[] {
   return Array.from(new Set(tokens.filter(Boolean)));
 }
@@ -66,6 +74,7 @@ export default function HomePage() {
 
   const warnings = result?.warnings ?? [];
   const tokens = result?.tokens ?? [];
+  const showWarnings = warnings.length > 0;
 
   const warningGroups = useMemo(() => {
     const groups: Record<WarningType, string[]> = {
@@ -87,15 +96,8 @@ export default function HomePage() {
     };
   }, [warnings]);
 
-  const templateText = useMemo(() => {
-    const rows = [
-      "한글단어\t제안약어\t설명",
-      ...warningGroups.unknown.map((token) => `${token}\t\t`)
-    ];
-    return rows.join("\n");
-  }, [warningGroups.unknown]);
-
   const outputValue = result?.output ?? "";
+  const descriptionValue = result?.description ?? "";
 
   const handleCopyOutput = async () => {
     if (!outputValue) {
@@ -106,12 +108,12 @@ export default function HomePage() {
     setTimeout(() => setCopyNotice(null), 1500);
   };
 
-  const handleCopyTemplate = async () => {
-    if (!warningGroups.unknown.length) {
+  const handleCopyDescription = async () => {
+    if (!descriptionValue) {
       return;
     }
-    await navigator.clipboard.writeText(templateText);
-    setCopyNotice("템플릿이 복사되었습니다");
+    await navigator.clipboard.writeText(descriptionValue);
+    setCopyNotice("설명이 복사되었습니다");
     setTimeout(() => setCopyNotice(null), 1500);
   };
 
@@ -119,12 +121,12 @@ export default function HomePage() {
     <main>
       <div className="page">
         <header className="hero">
-          <div className="badge">DB 표준 사전</div>
-          <h1>DB 네이밍 변환기</h1>
+          <div className="badge">DB 네이밍 변환기</div>
+          {/* <h1>DB 네이밍 변환기</h1>
           <p>
             밑줄로 구분된 입력을 표준 약어로 변환합니다. 정확히 일치하는 단어만 변환하며
             금칙어, 동의어, 미등록 단어는 경고로 안내합니다.
-          </p>
+          </p> */}
         </header>
 
         <section className="panel">
@@ -164,21 +166,37 @@ export default function HomePage() {
                 </button>
               </div>
             </div>
-            <div className="result-body">
-              <span className="result-text">{outputValue || "변환할 단어를 입력하세요."}</span>
-              {loading ? <span className="loading">변환 중...</span> : null}
-            </div>
-            {copyNotice ? <span className="pill dark">{copyNotice}</span> : null}
-            {error ? <span className="pill warm">{error}</span> : null}
+          <div className="result-body">
+            <span className="result-text">{outputValue || "변환할 단어를 입력하세요."}</span>
+            {loading ? <span className="loading">변환 중...</span> : null}
           </div>
-        </section>
+          <div className="result-header">
+            <label>설명</label>
+            <div className="actions">
+              <button
+                className="ghost-button"
+                type="button"
+                onClick={handleCopyDescription}
+                disabled={!descriptionValue}
+              >
+                설명 복사
+              </button>
+            </div>
+          </div>
+          <div className="result-body result-body--description">
+            <span className="result-text">
+              {descriptionValue || "설명이 없습니다."}
+            </span>
+          </div>
+          {copyNotice ? <span className="pill dark">{copyNotice}</span> : null}
+          {error ? <span className="pill warm">{error}</span> : null}
+        </div>
+      </section>
 
-        <section className="grid">
-          <div className="card">
-            <h2>경고</h2>
-            {warnings.length === 0 ? (
-              <p className="empty-state">경고가 없습니다.</p>
-            ) : (
+        <section className="stack">
+          {showWarnings ? (
+            <div className="card">
+              <h2>경고</h2>
               <div className="warning-list">
                 {(
                   [
@@ -189,8 +207,12 @@ export default function HomePage() {
                   ] as const
                 ).map((group) => (
                   <div className="warning-item" key={group.type}>
-                    <span className={group.type === "forbidden" ? "pill warm" : "pill"}>
+                    <span
+                      className={`pill ${group.type === "forbidden" ? "warm" : ""} tooltip`}
+                      data-tooltip={WARNING_DESCRIPTIONS[group.type]}
+                    >
                       {WARNING_LABELS[group.type]}
+                      <span className="tooltip-indicator" aria-hidden="true" />
                     </span>
                     <span>
                       {group.tokens.length ? group.tokens.join(", ") : "없음"}
@@ -198,18 +220,8 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-            )}
-            <div className="actions" style={{ marginTop: 16 }}>
-              <button
-                className="primary-button"
-                type="button"
-                onClick={handleCopyTemplate}
-                disabled={!warningGroups.unknown.length}
-              >
-                사전 추가 요청 템플릿 복사
-              </button>
             </div>
-          </div>
+          ) : null}
 
           <div className="card">
             <h2>토큰 상세</h2>
@@ -219,19 +231,83 @@ export default function HomePage() {
               <table className="tokens-table">
                 <thead>
                   <tr>
-                    <th>입력</th>
-                    <th>분류</th>
-                    <th>표준</th>
-                    <th>출력</th>
+                    <th>
+                      <span className="tooltip" data-tooltip="번호">
+                        번호
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
+                    <th>
+                      <span className="tooltip" data-tooltip="공통표준단어명">
+                        단어
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
+                    <th>
+                      <span className="tooltip" data-tooltip="공통표준단어영문약어명">
+                        약어
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
+                    <th>
+                      <span className="tooltip" data-tooltip="공통표준단어영문명">
+                        영문명
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
+                    <th>
+                      <span className="tooltip" data-tooltip="공통표준단어설명">
+                        설명
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
+                    <th>
+                      <span className="tooltip" data-tooltip="형식단어여부">
+                        형식
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
+                    <th>
+                      <span className="tooltip" data-tooltip="공통표준도메인분류명">
+                        도메인
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
+                    <th>
+                      <span className="tooltip" data-tooltip="이음동의어목록">
+                        동의어
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
+                    <th>
+                      <span className="tooltip" data-tooltip="금칙어목록">
+                        금칙어
+                        <span className="tooltip-indicator" aria-hidden="true" />
+                      </span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {tokens.map((token, index) => (
                     <tr key={`${token.input}-${index}`}>
-                      <td>{token.input}</td>
-                      <td>{token.kind}</td>
-                      <td>{token.standard || "-"}</td>
-                      <td>{token.output}</td>
+                      <td>{token.numberCol || "-"}</td>
+                      <td>{token.standard || token.input || "-"}</td>
+                      <td>{token.abbr || "-"}</td>
+                      <td>{token.englishName || "-"}</td>
+                      <td>
+                        {token.description?.trim() ? (
+                          <span className="tooltip ellipsis" data-tooltip={token.description}>
+                            <span className="ellipsis-text">{token.description}</span>
+                            <span className="tooltip-indicator" aria-hidden="true" />
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td>{token.isFormat === undefined ? "-" : token.isFormat ? "Y" : "N"}</td>
+                      <td>{token.domainName || "-"}</td>
+                      <td>{token.synonymList?.length ? token.synonymList.join(", ") : "-"}</td>
+                      <td>{token.forbiddenList?.length ? token.forbiddenList.join(", ") : "-"}</td>
                     </tr>
                   ))}
                 </tbody>
