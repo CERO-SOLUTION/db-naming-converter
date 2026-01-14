@@ -175,7 +175,7 @@ export function convertInput(input: string, dict: NormalizedDictionary): Convert
 
   return {
     output: outputTokens.join("_").toLowerCase(),
-    description: descriptionTokens.join("_"),
+    description: descriptionTokens.join(" "),
     warnings,
     tokens,
     meta: dict.meta
