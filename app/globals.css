@@ -338,8 +338,8 @@ button:disabled {
 }
 
 .tooltip.ellipsis {
-  width: 220px;
-  max-width: 220px;
+  width: 320px;
+  max-width: 320px;
 }
 
 .ellipsis-text {

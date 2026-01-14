@@ -234,7 +234,7 @@ export default function HomePage() {
                     <th>
                       <span className="tooltip" data-tooltip="번호">
                         번호
-                        <span className="tooltip-indicator" aria-hidden="true" />
+                        <span />
                       </span>
                     </th>
                     <th>
