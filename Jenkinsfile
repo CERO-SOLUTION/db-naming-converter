@@ -31,6 +31,12 @@ def getBuildBranch(branchName) {
   return branches[branchName]
 }
 
+// 브랜치별 빌드 명령어
+def getBuildCommand(branchName) {
+  // 모든 브랜치에서 동일한 빌드 명령어 사용
+  return 'pnpm install &&pnpm run build:dict && pnpm build'
+}
+
 pipeline {
   agent any
 
