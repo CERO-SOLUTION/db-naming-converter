@@ -78,6 +78,7 @@ EXPOSE 18989
 
 # 호스트 이름 localhost로 설정
 ENV HOSTNAME "0.0.0.0"
+ENV PORT 18989
 
 # server.js는 standalone 출력에서 next build에 의해 생성
 # https://nextjs.org/docs/pages/api-reference/next-config-js/output
