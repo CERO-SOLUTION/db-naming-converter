@@ -2,7 +2,7 @@
   "meta": {
     "source": "BMS_테이블_정의_V1.1.xlsx",
     "sheet": "DB사전",
-    "generatedAt": "2026-01-14T03:31:23.424Z",
+    "generatedAt": "2026-01-15T06:59:23.415Z",
     "overrides": {
       "standard": []
     }
@@ -11682,7 +11682,7 @@
       "numberCol": "1297"
     },
     "상황": {
-      "abbr": "sttn",
+      "abbr": "stn",
       "englishName": "Situation",
       "description": "狀況. 일이 되어 가는 과정이나 형편",
       "domainName": "-",
@@ -29535,6 +29535,132 @@
       "domainName": "-",
       "isFormat": false,
       "rowNo": 3284,
+      "numberCol": "-"
+    },
+    "정류소": {
+      "abbr": "stn",
+      "englishName": "Station",
+      "description": "停留所. 노선 운행 중 차량이 정차하여 승객의 승·하차 또는 대기를 위해 운영되는 정차 지점",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3286,
+      "numberCol": "-"
+    },
+    "전원": {
+      "abbr": "pwr",
+      "englishName": "Power",
+      "description": "電源. 시스템 또는 장비의 동작을 위해 전기를 공급하는 에너지원",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3287,
+      "numberCol": "-"
+    },
+    "팬": {
+      "abbr": "fan",
+      "englishName": "Fan",
+      "description": "扇. 공기 흐름을 발생시켜 냉각, 환기 또는 열 배출을 수행하는 회전 장치",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3288,
+      "numberCol": "-"
+    },
+    "저상버스": {
+      "abbr": "lfbus",
+      "englishName": "Low-floor Bus",
+      "description": "低床bus. 차량 바닥이 낮아 휠체어 및 교통약자의 승·하차가 용이한 버스",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3289,
+      "numberCol": "-"
+    },
+    "인근": {
+      "abbr": "nrby",
+      "englishName": "nearby",
+      "description": "隣近. 가까운 거리에 있는 곳. 일상적으로 널리 사용되는 표현",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3290,
+      "numberCol": "-"
+    },
+    "언어셋": {
+      "abbr": "langst",
+      "englishName": "Language Set",
+      "description": "시스템에서 지원하는 언어의 종류를 정의한 집합",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3291,
+      "numberCol": ""
+    },
+    "다국어": {
+      "abbr": "mltlg",
+      "englishName": "Multilingual",
+      "description": "하나의 콘텐츠나 서비스를 여러 언어로 제공하기 위해 각 언어별로 번역된 텍스트를 관리하는 것",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3292,
+      "numberCol": ""
+    },
+    "막차": {
+      "abbr": "lstcar",
+      "englishName": "Last Vehicle",
+      "description": "終車. 노선에서 최종적으로 운행되는 차량",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3293,
+      "numberCol": "-"
+    },
+    "알고리즘": {
+      "abbr": "algo",
+      "englishName": "Algorithm",
+      "description": "Algorithm. 특정 결과를 산출하기 위해 정의된 처리 절차 또는 계산 방법",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3294,
+      "numberCol": "-"
+    },
+    "돌발": {
+      "abbr": "incdt",
+      "englishName": "Incident",
+      "description": "突發. 예기치 않게 갑자기 발생한 상황. 도로 위 사고·공사·행사 등 비정상 상황 표현에 적합",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3295,
+      "numberCol": "-"
+    },
+    "두번째": {
+      "abbr": "scnd",
+      "englishName": "Second",
+      "description": "Second. 두 번째 순서 또는 위치.",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3296,
+      "numberCol": "-"
+    },
+    "GPS": {
+      "abbr": "gps",
+      "englishName": "Global Positioning System",
+      "description": "Global Positioning System. 위성 신호를 이용하여 위치·속도·시간 정보를 제공하는 위성항법시스템",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3297,
+      "numberCol": "-"
+    },
+    "궤적": {
+      "abbr": "trjct",
+      "englishName": "Trajectory",
+      "description": "軌跡. 이동체가 지나간 경로를 시간순으로 기록한 위치 데이터의 집합",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3298,
+      "numberCol": "-"
+    },
+    "통과": {
+      "abbr": "pass",
+      "englishName": "Pass",
+      "description": "通過. 어떤 지점이나 구간을 지나감. 정류장·교차로 등 특정 지점을 거쳐감을 표현",
+      "domainName": "",
+      "isFormat": false,
+      "rowNo": 3299,
       "numberCol": "-"
     }
   },
