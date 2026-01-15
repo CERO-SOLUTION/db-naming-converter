@@ -26,22 +26,31 @@ pipeline {
     stage('이미지 빌드') {
       steps {
         script {
-          def BUILD_COMMAND = 'pnpm run build:dict && pnpm build'
-          def DOCKER_IMAGE = docker.build("${DOCKER_PROJECT_NAME}/${DOCKER_IMAGE_NAME}-${env.BUILD_BRANCH}", 
-                                        "--build-arg BUILD_COMMAND=\"${BUILD_COMMAND}\" .")
-          env.DOCKER_IMAGE = DOCKER_IMAGE.id
+            // DOTENV 파일과 SSH KEY를 가져옴
+          // withCredentials([file(credentialsId: BUILD_ENV_ID, variable: 'DOTENV')]) {
+          //   writeFile file: '.env.local', text: readFile(DOTENV)
+          // }
+
+          // 브랜치에 따라 이미지 이름 변경
+          // DOCKER_IMAGE = docker.build("${DOCKER_IMAGE_NAME}-${BUILD_BRANCH}", "-f Dockerfile.${BUILD_BRANCH} --secret id=nextEnv,src=.env.local .")
+          DOCKER_IMAGE = docker.build("${DOCKER_PROJECT_NAME}/${DOCKER_IMAGE_NAME}-${BUILD_BRANCH}", "--build-arg BUILD_COMMAND=\"${BUILD_COMMAND}\" .")
         }
+
+        echo "Built: ${DOCKER_IMAGE_NAME}-${BUILD_BRANCH}"
       }
     }
 
     stage('이미지 전송') {
       steps {
         script {
+          // 개발서버 내부 Docker 레지스트리(https://registry.zetra.kr)에 업로드
           docker.withRegistry('https://registry.zetra.kr', REGISTRY_LOGIN_INFO_ID) {
-            docker.image(env.DOCKER_IMAGE).push("${env.BUILD_NUMBER}")
-            docker.image(env.DOCKER_IMAGE).push('latest')
+            DOCKER_IMAGE.push(env.BUILD_NUMBER)
+            DOCKER_IMAGE.push('latest')
           }
         }
+
+        echo "Pushed: ${DOCKER_IMAGE_NAME}-${BUILD_BRANCH}:${env.BUILD_NUMBER}"
       }
     }
 
