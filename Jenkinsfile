@@ -48,14 +48,5 @@ pipeline {
         always {
             echo "Build 완료: ${XLSX_FILE} 다운로드됨"
         }
-        success {
-            emailext to: 'team@company.com',
-                     subject: "✅ BMS + Next Build #${BUILD_NUMBER}",
-                     attachmentsPattern: 'BMS_*.xlsx'
-        }
-        failure {
-            emailext to: 'team@company.com', 
-                     subject: "❌ Build 실패 #${BUILD_NUMBER}"
-        }
     }
 }
