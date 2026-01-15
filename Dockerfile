@@ -42,7 +42,7 @@ ARG BUILD_COMMAND
 # RUN --mount=type=secret,id=nextEnv,target=/app/.env.local $BUILD_COMMAND
 
 # 외부 시크릿 없이 빌드
-RUN $BUILD_COMMAND
+RUN sh -c "$BUILD_COMMAND"
 
 # 프로덕션 이미지, 모든 파일을 복사하고 실행
 FROM base AS runner
