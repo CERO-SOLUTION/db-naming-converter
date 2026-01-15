@@ -7,7 +7,7 @@ def getDeployTargets(envName) {
     SSH_MODE: 'KEYONLY',
     SSH_IP: '192.168.0.241',
     SSH_KEY_ID: '241-login-key',
-    COPY_DIR: 'containers/kits-control'
+    COPY_DIR: 'containers/db-naming-converter'
   ]]
 
     // dev 브랜치
