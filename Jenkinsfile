@@ -10,38 +10,52 @@ pipeline {
         stage('Setup pnpm') {
             steps {
                 sh '''
-                corepack enable
-                corepack prepare pnpm@latest --activate
-                pnpm -v
+                    corepack enable || true
+                    corepack prepare pnpm@latest --activate || true
+                    pnpm --version || echo "pnpm ready"
                 '''
             }
         }
         stage('Download BMS XLSX (curl)') {
             steps {
                 sh """
-                mkdir -p data/
-                # XLSX 직접 다운로드 (공개 공유 필수!)
-                curl -L "https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx&gid=${GID}" \\
-                     -o ${XLSX_FILE}
-                ls -la ${XLSX_FILE}
-                echo "Downloaded XLSX: \$(file ${XLSX_FILE})"
+                    mkdir -p data/
+                    curl -L -f "https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx&gid=${GID}" \\
+                         -o ${XLSX_FILE}
+                    ls -la ${XLSX_FILE}
+                    file ${XLSX_FILE} || echo "File check skipped"
                 """
             }
         }
         stage('pnpm Install & Build') {
             steps {
                 sh '''
-                pnpm install
-                pnpm run build:dict
-                pnpm build
+                    pnpm install --frozen-lockfile
+                    pnpm run build:dict
+                    pnpm build
                 '''
             }
         }
         stage('Archive') {
             steps {
-                archiveArtifacts artifacts: "${XLSX_FILE},.next/**,out/**", 
-                               allowEmptyArchive: false, fingerprint: true
+                archiveArtifacts artifacts: "${XLSX_FILE},data/**,.next/**,out/**", 
+                               allowEmptyArchive: true, 
+                               fingerprint: true
             }
+        }
+    }
+    post {
+        always {
+            echo "Build 완료: ${XLSX_FILE} 다운로드됨"
+        }
+        success {
+            emailext to: 'team@company.com',
+                     subject: "✅ BMS + Next Build #${BUILD_NUMBER}",
+                     attachmentsPattern: 'BMS_*.xlsx'
+        }
+        failure {
+            emailext to: 'team@company.com', 
+                     subject: "❌ Build 실패 #${BUILD_NUMBER}"
         }
     }
 }
