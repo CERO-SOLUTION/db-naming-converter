@@ -144,9 +144,11 @@ pipeline {
                   
                   // 도커 이미지 Pull 및 재시작
                   sshCommand remote: remote, command: """
-                    cd ${target.COPY_DIR}-${BUILD_BRANCH}/
-                    DOCKER_IMAGE_NAME=${REGISTRY_URL}/${DOCKER_PROJECT_NAME}/${DOCKER_IMAGE_NAME}-${BUILD_BRANCH} DOCKER_CONTAINER_NAME=${DOCKER_IMAGE_NAME}-${BUILD_BRANCH} docker compose pull
-                    DOCKER_IMAGE_NAME=${REGISTRY_URL}/${DOCKER_PROJECT_NAME}/${DOCKER_IMAGE_NAME}-${BUILD_BRANCH} DOCKER_CONTAINER_NAME=${DOCKER_IMAGE_NAME}-${BUILD_BRANCH} docker compose up -d
+                    cd ${target.COPY_DIR}-${BUILD_BRANCH}/ || exit 1
+                    export DOCKER_IMAGE_NAME=${REGISTRY_URL}/${DOCKER_PROJECT_NAME}/${DOCKER_IMAGE_NAME}-${BUILD_BRANCH}
+                    export DOCKER_CONTAINER_NAME=${DOCKER_IMAGE_NAME}-${BUILD_BRANCH}
+                    docker compose pull || exit 1
+                    docker compose up -d || exit 1
                   """
                 }
               }
