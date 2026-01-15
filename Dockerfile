@@ -30,7 +30,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN ls -l
+# XLSX 파일 다운로드
+RUN apk add --no-cache curl && \
+    curl -L -f "https://docs.google.com/spreadsheets/d/1Q98LFRr_Ka1ZyBKUJ6u1vJD67F_JHIs8eovklCX_dNY/export?format=xlsx&gid=1543734301" -o BMS_테이블_정의_V1.1.xlsx && \
+    ls -la BMS_테이블_정의_V1.1.xlsx
 
 # Next.js 익명 수집 끄기
 ENV NEXT_TELEMETRY_DISABLED 1

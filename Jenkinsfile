@@ -23,16 +23,6 @@ pipeline {
       }
     }
 
-    stage('Download BMS XLSX') {
-      steps {
-        sh '''
-          mkdir -p data/
-          curl -L -f "https://docs.google.com/spreadsheets/d/1Q98LFRr_Ka1ZyBKUJ6u1vJD67F_JHIs8eovklCX_dNY/export?format=xlsx&gid=1543734301" -o BMS_테이블_정의_V1.1.xlsx
-          ls -la BMS_테이블_정의_V1.1.xlsx
-        '''
-      }
-    }
-
     stage('이미지 빌드') {
       steps {
         script {

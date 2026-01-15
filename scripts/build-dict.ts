@@ -70,7 +70,8 @@ function readSheetRows(): unknown[][] {
   const workbook = xlsx.readFile(SOURCE_FILE, { cellText: false, cellDates: false });
   const sheet = workbook.Sheets[SHEET_NAME];
   if (!sheet) {
-    throw new Error(`Sheet not found: ${SHEET_NAME}`);
+    const availableSheets = Object.keys(workbook.Sheets);
+    throw new Error(`Sheet not found: ${SHEET_NAME}. Available sheets: ${availableSheets.join(", ")}`);
   }
 
   return xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" }) as unknown[][];
