@@ -1,22 +1,21 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '-u root --shm-size=2g'  // 권한 + 메모리
+        }
+    }
     environment {
         SHEET_ID = '1Q98LFRr_Ka1ZyBKUJ6u1vJD67F_JHIs8eovklCX_dNY'
         GID = '1543734301'
         XLSX_FILE = 'BMS_테이블_정의_V1.1.xlsx'
     }
     stages {
-        stage('Install Node & pnpm') {
+        stage('Setup pnpm') {
             steps {
                 sh '''
-                    # Node.js 직접 설치 (curl - Node 18)
-                    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-                    apt-get install -y nodejs
-                    
-                    # pnpm 글로벌 설치
-                    npm install -g corepack pnpm
-                    
-                    node --version
+                    corepack enable
+                    corepack prepare pnpm@latest --activate
                     pnpm --version
                 '''
             }
@@ -28,11 +27,10 @@ pipeline {
                     curl -L -f "https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx&gid=${GID}" \\
                          -o ${XLSX_FILE}
                     ls -la ${XLSX_FILE}
-                    file ${XLSX_FILE}
                 """
             }
         }
-        stage('pnpm Install & Build') {
+        stage('pnpm Build') {
             steps {
                 sh '''
                     pnpm install --frozen-lockfile
@@ -41,14 +39,11 @@ pipeline {
                 '''
             }
         }
-        stage('Archive') {
-            steps {
-                archiveArtifacts artifacts: "${XLSX_FILE},data/**,.next/**,out/**", 
-                               allowEmptyArchive: true, fingerprint: true
-            }
-        }
     }
     post {
-        always { echo "Build 완료: ${XLSX_FILE}" }
+        always {
+            archiveArtifacts artifacts: "${XLSX_FILE},data/**,.next/**,out/**", 
+                           allowEmptyArchive: true
+        }
     }
 }
