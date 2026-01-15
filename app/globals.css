@@ -117,10 +117,18 @@ main {
   padding: 24px;
   box-shadow: var(--shadow);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 24px;
+  align-items: start;
   animation: rise 0.6s ease-out both;
   animation-delay: 0.05s;
+}
+
+.panel-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
 .field {
@@ -129,11 +137,56 @@ main {
   gap: 12px;
 }
 
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.select-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .field-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.field-header--input {
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.select-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.select-inline label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.select-inline select {
+  width: 60px;
+  min-width: 60px;
 }
 
 label {
@@ -158,10 +211,44 @@ input[type="text"]:focus {
   box-shadow: 0 0 0 3px rgba(31, 111, 120, 0.15);
 }
 
+select {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: #ffffff;
+  padding: 6px 8px;
+  min-height: 34px;
+  font-size: 0.85rem;
+  font-family: var(--font-mono), "SFMono-Regular", monospace;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: rgba(31, 111, 120, 0.6);
+  box-shadow: 0 0 0 3px rgba(31, 111, 120, 0.15);
+}
+
+select.select-error {
+  border-color: rgba(180, 54, 54, 0.75);
+  box-shadow: 0 0 0 2px rgba(180, 54, 54, 0.15);
+}
+
 .result {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+}
+
+.result-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.result-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .result-header {

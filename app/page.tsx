@@ -18,12 +18,39 @@ const WARNING_DESCRIPTIONS: Record<WarningType, string> = {
     "형식단어(형식단어여부=Y)가 마지막 토큰이 아닌 위치에 있을 때 경고."
 };
 
+const PHYSICAL_OPTIONS = [
+  { label: "테이블", code: "T" },
+  { label: "뷰", code: "V" },
+  { label: "클러스터", code: "C" }
+];
+
+const LOGICAL_OPTIONS = [
+  { label: "마스터 테이블", code: "M" },
+  { label: "현황 테이블", code: "C" },
+  { label: "이력 테이블", code: "L" },
+  { label: "원시 테이블", code: "R" },
+  { label: "통계 테이블", code: "S" },
+  { label: "운영(관리) 테이블", code: "O" }
+];
+
+const BUSINESS_OPTIONS = [
+  { label: "시설물", code: "FA" },
+  { label: "연계", code: "IF" },
+  { label: "운영", code: "OP" },
+  { label: "수집", code: "TC" },
+  { label: "가공", code: "TP" },
+  { label: "제공", code: "TS" }
+];
+
 function uniqueTokens(tokens: string[]): string[] {
   return Array.from(new Set(tokens.filter(Boolean)));
 }
 
 export default function HomePage() {
   const [input, setInput] = useState("");
+  const [physicalCode, setPhysicalCode] = useState("");
+  const [logicalCode, setLogicalCode] = useState("");
+  const [businessCode, setBusinessCode] = useState("");
   const [result, setResult] = useState<ConvertResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,16 +123,44 @@ export default function HomePage() {
     };
   }, [warnings]);
 
-  const outputValue = result?.output ?? "";
+  const baseOutput = result?.output ?? "";
   const descriptionValue = result?.description ?? "";
+  const selectedCount = [physicalCode, logicalCode, businessCode].filter(Boolean).length;
+  const hasSelections = selectedCount === 3;
+  const hasAnySelection = selectedCount > 0;
+  const hasAnyInput = Boolean(input || hasAnySelection);
+  const combinedOutput = hasSelections && baseOutput
+    ? `${physicalCode}${logicalCode}_${businessCode}_${baseOutput}`.toLowerCase()
+    : "";
+  const finalOutput = hasSelections
+    ? combinedOutput
+    : hasAnySelection
+      ? ""
+      : baseOutput;
+  const outputDisplay = finalOutput
+    ? finalOutput
+    : hasAnySelection && !hasSelections
+      ? "물리/논리/업무를 모두 선택하세요."
+      : input.trim()
+        ? loading
+          ? "변환 중..."
+          : "변환 결과가 없습니다."
+        : "변환할 단어를 입력하세요.";
 
   const handleCopyOutput = async () => {
-    if (!outputValue) {
+    if (!finalOutput) {
       return;
     }
-    await navigator.clipboard.writeText(outputValue);
+    await navigator.clipboard.writeText(finalOutput);
     setCopyNotice("결과가 복사되었습니다");
     setTimeout(() => setCopyNotice(null), 1500);
+  };
+
+  const handleClear = () => {
+    setInput("");
+    setPhysicalCode("");
+    setLogicalCode("");
+    setBusinessCode("");
   };
 
   const handleCopyDescription = async () => {
@@ -130,68 +185,158 @@ export default function HomePage() {
         </header>
 
         <section className="panel">
-          <div className="field">
-            <div className="field-header">
-              <label htmlFor="input">입력</label>
-              <button
-                className="ghost-button"
-                type="button"
-                onClick={() => setInput("")}
-                disabled={!input}
-              >
-                지우기
-              </button>
+          <div className="panel-col">
+            <div className="field-group">
+            <div className="field">
+              <div className="field-header field-header--input">
+                <label htmlFor="input">입력</label>
+                <div className="header-controls">
+                  <div className="select-row">
+                    <div className="select-inline">
+                      <label htmlFor="physical">
+                        <span
+                          className="tooltip"
+                          data-tooltip="물리적 특성 구분: T 테이블 · V 뷰 · C 클러스터"
+                        >
+                          물리
+                          <span className="tooltip-indicator" aria-hidden="true" />
+                        </span>
+                      </label>
+                <select
+                  id="physical"
+                  value={physicalCode}
+                  onChange={(event) => setPhysicalCode(event.target.value)}
+                  className={hasAnySelection && !physicalCode ? "select-error" : ""}
+                >
+                        <option value="">선택</option>
+                        {PHYSICAL_OPTIONS.map((option) => (
+                          <option key={option.code} value={option.code}>
+                            {option.code}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="select-inline">
+                      <label htmlFor="logical">
+                        <span
+                          className="tooltip"
+                          data-tooltip="논리적 특성 구분: M 마스터 · C 현황 · L 이력 · R 원시 · S 통계 · O 운영"
+                        >
+                          논리
+                          <span className="tooltip-indicator" aria-hidden="true" />
+                        </span>
+                      </label>
+                <select
+                  id="logical"
+                  value={logicalCode}
+                  onChange={(event) => setLogicalCode(event.target.value)}
+                  className={hasAnySelection && !logicalCode ? "select-error" : ""}
+                >
+                        <option value="">선택</option>
+                        {LOGICAL_OPTIONS.map((option) => (
+                          <option key={option.code} value={option.code}>
+                            {option.code}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="select-inline">
+                      <label htmlFor="business">
+                        <span
+                          className="tooltip"
+                          data-tooltip="업무영역 구분: FA 시설물 · IF 연계 · OP 운영 · TC 수집 · TP 가공 · TS 제공"
+                        >
+                          업무
+                          <span className="tooltip-indicator" aria-hidden="true" />
+                        </span>
+                      </label>
+                <select
+                  id="business"
+                  value={businessCode}
+                  onChange={(event) => setBusinessCode(event.target.value)}
+                  className={hasAnySelection && !businessCode ? "select-error" : ""}
+                >
+                        <option value="">선택</option>
+                        {BUSINESS_OPTIONS.map((option) => (
+                          <option key={option.code} value={option.code}>
+                            {option.code}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <button
+                    className="ghost-button"
+                    type="button"
+                    onClick={handleClear}
+                    disabled={!hasAnyInput}
+                  >
+                    지우기
+                  </button>
+                </div>
+              </div>
+              <input
+                id="input"
+                type="text"
+                value={input}
+                  placeholder="통계_예시"
+                  onChange={(event) => setInput(event.target.value)}
+                  autoComplete="off"
+                />
+              </div>
             </div>
-            <input
-              id="input"
-              type="text"
-              value={input}
-              placeholder="통계_일시"
-              onChange={(event) => setInput(event.target.value)}
-              autoComplete="off"
-            />
           </div>
 
-          <div className="result">
-            <div className="result-header">
-              <label>출력</label>
-              <div className="actions">
+          <div className="panel-col">
+            <div className="result">
+              <div className="result-group">
+                <div className="result-header">
+                  <label>출력</label>
+                  <div className="actions">
                 <button
                   className="primary-button"
                   type="button"
                   onClick={handleCopyOutput}
-                  disabled={!outputValue}
+                  disabled={!finalOutput}
                 >
                   결과 복사
                 </button>
+                  </div>
+                </div>
+                <div className="result-body">
+                  <span className="result-text">{outputDisplay}</span>
+                  {loading ? <span className="loading">변환 중...</span> : null}
+                </div>
+              </div>
+
+              <div className="result-group">
+                <div className="result-header">
+                  <label>영문명</label>
+                  <div className="actions">
+                    <button
+                      className="ghost-button"
+                      type="button"
+                      onClick={handleCopyDescription}
+                      disabled={!descriptionValue}
+                    >
+                      설명 복사
+                    </button>
+                  </div>
+                </div>
+                <div className="result-body result-body--description">
+                  <span className="result-text">
+                    {descriptionValue || "설명이 없습니다."}
+                  </span>
+                </div>
+              </div>
+
+              <div className="result-meta">
+                {copyNotice ? <span className="pill dark">{copyNotice}</span> : null}
+                {error ? <span className="pill warm">{error}</span> : null}
               </div>
             </div>
-          <div className="result-body">
-            <span className="result-text">{outputValue || "변환할 단어를 입력하세요."}</span>
-            {loading ? <span className="loading">변환 중...</span> : null}
           </div>
-          <div className="result-header">
-            <label>설명</label>
-            <div className="actions">
-              <button
-                className="ghost-button"
-                type="button"
-                onClick={handleCopyDescription}
-                disabled={!descriptionValue}
-              >
-                설명 복사
-              </button>
-            </div>
-          </div>
-          <div className="result-body result-body--description">
-            <span className="result-text">
-              {descriptionValue || "설명이 없습니다."}
-            </span>
-          </div>
-          {copyNotice ? <span className="pill dark">{copyNotice}</span> : null}
-          {error ? <span className="pill warm">{error}</span> : null}
-        </div>
-      </section>
+        </section>
 
         <section className="stack">
           {showWarnings ? (
