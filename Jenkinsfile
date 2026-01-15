@@ -1,14 +1,57 @@
+// 브랜치별 배포 위치
+def getDeployTargets(envName) {
+  targets = [:]
+
+  // dev 브랜치
+  targets['dev'] = [[
+    SSH_MODE: 'KEYONLY',
+    SSH_IP: '192.168.0.241',
+    SSH_KEY_ID: '241-login-key',
+    COPY_DIR: 'containers/kits-control'
+  ]]
+
+    // dev 브랜치
+//   targets['prod'] = [[
+//     SSH_MODE: 'KEYONLY',
+//     SSH_IP: '158.247.210.158',
+//     SSH_KEY_ID: 'its-test-key',
+//     COPY_DIR: 'containers/kits-control'
+//   ]]
+
+  return targets[envName]
+}
+
+// 브랜치별 환경 정보
+def getBuildBranch(branchName) {
+  branches = [
+    'origin/dev': 'dev',
+    'origin/prod': 'prod',
+  ]
+
+  return branches[branchName]
+}
+
 pipeline {
   agent any
+
   environment {
+
+    BUILD_BRANCH = getBuildBranch(env.GIT_BRANCH)
+    BUILD_COMMAND = getBuildCommand(env.GIT_BRANCH)
+
+    // 도커 설정
+    DOCKER_IMAGE = ''
+    DOCKER_PROJECT_NAME = 'cero'
+    DOCKER_IMAGE_NAME = "db-naming-converter"
+
     SHEET_ID = '1Q98LFRr_Ka1ZyBKUJ6u1vJD67F_JHIs8eovklCX_dNY'
     GID = '593269429'
     XLSX_FILE = 'BMS_테이블_정의_V1.1.xlsx'
-    DOCKER_PROJECT_NAME = 'cero'
-    DOCKER_IMAGE_NAME = "db-naming-converter"
-    GIT_KEY_ID = 'uinetworks-gitea-delploy-account'
-    GIT_REPO_URL = 'https://github.com/CERO-SOLUTION/db-naming-converter.git'
-    REGISTRY_URL = 'registry.zetra.kr'
+    
+    // Git, Docker 레지스트리(https://registry.zetra.kr) 로그인 정보 설정
+    GIT_KEY_ID = '_github-ssh_deploy@cero-solution.com'
+    GIT_REPO_URL = 'http://git.uinetworks.kr/its_base_project/kits-control.git' // Git 레포지토리 URL
+    REGISTRY_URL = 'registry.zetra.kr' // Docker 레지스트리 URL; https는 입력하지 말 것
     REGISTRY_LOGIN_INFO_ID = 'harbor_hjdev'
   }
 
