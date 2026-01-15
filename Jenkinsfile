@@ -26,7 +26,7 @@ pipeline {
     stage('이미지 빌드') {
       steps {
         script {
-          def BUILD_COMMAND = 'pnpm install && pnpm run build:dict && pnpm dev'
+          def BUILD_COMMAND = 'pnpm install && pnpm run build:dict'
           def DOCKER_IMAGE = docker.build("${DOCKER_PROJECT_NAME}/${DOCKER_IMAGE_NAME}-${env.BUILD_BRANCH}", 
                                         "--build-arg BUILD_COMMAND=\"${BUILD_COMMAND}\" .")
           env.DOCKER_IMAGE = DOCKER_IMAGE.id
