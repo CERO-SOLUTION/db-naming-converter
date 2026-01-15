@@ -38,4 +38,18 @@ pipeline {
                 sh '''
                     pnpm install --frozen-lockfile
                     pnpm run build:dict
-                    pnpm b
+                    pnpm build
+                '''
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: "${XLSX_FILE},data/**,.next/**,out/**", 
+                           allowEmptyArchive: true
+        }
+        success {
+            echo "✅ SUCCESS: XLSX + Next Build 완료!"
+        }
+    }
+}
