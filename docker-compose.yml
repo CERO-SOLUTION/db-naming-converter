@@ -3,7 +3,7 @@ services:
     image: '${DOCKER_IMAGE_NAME}:latest'
     container_name: '${DOCKER_CONTAINER_NAME}'
     ports:
-      - "18084:3000"
+      - "18989:18989"
     deploy:
       resources:
         limits:

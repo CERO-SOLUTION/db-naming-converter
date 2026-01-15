@@ -74,7 +74,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-EXPOSE 18084
+EXPOSE 18989
 
 # 호스트 이름 localhost로 설정
 ENV HOSTNAME "0.0.0.0"
