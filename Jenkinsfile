@@ -34,7 +34,7 @@ def getBuildBranch(branchName) {
 // 브랜치별 빌드 명령어
 def getBuildCommand(branchName) {
   // 모든 브랜치에서 동일한 빌드 명령어 사용
-  return 'pnpm install &&pnpm run build:dict && pnpm build'
+  return 'pnpm install && pnpm run build:dict && pnpm build'
 }
 
 pipeline {
@@ -56,7 +56,7 @@ pipeline {
     
     // Git, Docker 레지스트리(https://registry.zetra.kr) 로그인 정보 설정
     GIT_KEY_ID = '_github-ssh_deploy@cero-solution.com'
-    GIT_REPO_URL = 'http://git.uinetworks.kr/its_base_project/kits-control.git' // Git 레포지토리 URL
+    GIT_REPO_URL = 'https://github.com/CERO-SOLUTION/db-naming-converter.git' // Git 레포지토리 URL
     REGISTRY_URL = 'registry.zetra.kr' // Docker 레지스트리 URL; https는 입력하지 말 것
     REGISTRY_LOGIN_INFO_ID = 'harbor_hjdev'
   }
