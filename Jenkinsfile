@@ -1,17 +1,23 @@
 pipeline {
     agent any
-    // tools 제거 - npx pnpm 사용
     environment {
         SHEET_ID = '1Q98LFRr_Ka1ZyBKUJ6u1vJD67F_JHIs8eovklCX_dNY'
         GID = '1543734301'
         XLSX_FILE = 'BMS_테이블_정의_V1.1.xlsx'
     }
     stages {
-        stage('Setup pnpm') {
+        stage('Install Node & pnpm') {
             steps {
                 sh '''
-                    npx corepack@latest enable || true
-                    npx pnpm@latest --version
+                    # Node.js 직접 설치 (curl - Node 18)
+                    curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+                    apt-get install -y nodejs
+                    
+                    # pnpm 글로벌 설치
+                    npm install -g corepack pnpm
+                    
+                    node --version
+                    pnpm --version
                 '''
             }
         }
@@ -22,16 +28,16 @@ pipeline {
                     curl -L -f "https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx&gid=${GID}" \\
                          -o ${XLSX_FILE}
                     ls -la ${XLSX_FILE}
-                    file ${XLSX_FILE} || echo "Excel downloaded"
+                    file ${XLSX_FILE}
                 """
             }
         }
         stage('pnpm Install & Build') {
             steps {
                 sh '''
-                    npx pnpm@latest install --frozen-lockfile
-                    npx pnpm@latest run build:dict
-                    npx pnpm@latest build
+                    pnpm install --frozen-lockfile
+                    pnpm run build:dict
+                    pnpm build
                 '''
             }
         }
@@ -43,8 +49,6 @@ pipeline {
         }
     }
     post {
-        always {
-            echo "✅ Build 완료: ${XLSX_FILE} 저장됨"
-        }
+        always { echo "Build 완료: ${XLSX_FILE}" }
     }
 }
