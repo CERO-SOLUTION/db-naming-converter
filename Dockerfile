@@ -47,6 +47,9 @@ ARG BUILD_COMMAND
 # 외부 시크릿 없이 빌드
 RUN sh -c "$BUILD_COMMAND"
 
+# public 디렉토리가 없으면 생성 (Next.js standalone 빌드에 필요)
+RUN mkdir -p public && touch public/.gitkeep
+
 # 프로덕션 이미지, 모든 파일을 복사하고 실행
 FROM base AS runner
 WORKDIR /app
@@ -57,7 +60,8 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
+# public 디렉토리 복사 (builder에서 생성했으므로 항상 존재)
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # 프리렌더 캐시에 대한 올바른 권한 설정
 RUN mkdir .next

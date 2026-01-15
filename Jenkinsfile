@@ -46,23 +46,57 @@ pipeline {
     }
 
     stage('컨테이너 배포') {
-      when {
-        expression { env.BUILD_BRANCH == 'dev' }
-      }
+       when {
+         expression { BUILD_BRANCH == 'dev' }
+       }
       steps {
-        sshPublisher(
-          publishers: [
-            sshPublisherDesc(
-              configName: '241-login-key',
-              transfers: [sshTransfer(sourceFiles: 'docker-compose.yml', remoteDirectory: 'containers/kits-control-dev')],
-              execCommand: '''
-                cd containers/kits-control-dev/
-                DOCKER_IMAGE_NAME=registry.zetra.kr/cero/db-naming-converter-dev DOCKER_CONTAINER_NAME=db-naming-converter-dev docker compose pull
-                DOCKER_IMAGE_NAME=registry.zetra.kr/cero/db-naming-converter-dev DOCKER_CONTAINER_NAME=db-naming-converter-dev docker compose up -d
-              '''
-            )
-          ]
-        )
+        script {
+          def deployTargets = getDeployTargets(BUILD_BRANCH)
+          def deployments = [:]
+
+          // 배포 타깃별로 병렬 배포
+          for (item in deployTargets) {
+            def target = item
+
+            deployments["TARGET-${BUILD_BRANCH}"] = {
+              def remote = [:]
+              remote.name = target.SSH_IP
+              remote.host = target.SSH_IP
+              remote.allowAnyHosts = true
+
+              if (target.SSH_MODE == 'KEYONLY') {
+                withCredentials([
+                  // DOTENV 파일과 SSH KEY를 가져옴
+                  // file(credentialsId: BUILD_ENV_ID, variable: 'DOTENV'),
+                  sshUserPrivateKey(credentialsId: target.SSH_KEY_ID, keyFileVariable: 'SSH_PRIVATE_KEY', usernameVariable: 'USERNAME')
+                  ]) {
+                  // 가져온 키로 ssh 정보 설정
+                  remote.user = USERNAME
+                  remote.identityFile = SSH_PRIVATE_KEY
+
+                  sshCommand remote: remote, command: """
+                    mkdir -p ${target.COPY_DIR}-${BUILD_BRANCH}/
+                  """
+
+                  // docker compose 파일 전송
+                  sshPut remote: remote, from: "docker-compose.yml", into: "${target.COPY_DIR}-${BUILD_BRANCH}/", failOnError: 'true'
+
+                  // 각 상황에 맞는 .env.* 파일 전송
+                  // sshPut remote: remote, from: DOTENV, into: "${target.COPY_DIR}-${BUILD_BRANCH}/.env.local", failOnError: 'true'
+                  
+                  // 도커 이미지 Pull 및 재시작
+                  sshCommand remote: remote, command: """
+                    cd ${target.COPY_DIR}-${BUILD_BRANCH}/
+                    DOCKER_IMAGE_NAME=${REGISTRY_URL}/${DOCKER_PROJECT_NAME}/${DOCKER_IMAGE_NAME}-${BUILD_BRANCH} DOCKER_CONTAINER_NAME=${DOCKER_IMAGE_NAME}-${BUILD_BRANCH} docker compose pull
+                    DOCKER_IMAGE_NAME=${REGISTRY_URL}/${DOCKER_PROJECT_NAME}/${DOCKER_IMAGE_NAME}-${BUILD_BRANCH} DOCKER_CONTAINER_NAME=${DOCKER_IMAGE_NAME}-${BUILD_BRANCH} docker compose up -d
+                  """
+                }
+              }
+            }
+          }
+
+          parallel deployments
+        }
       }
     }
   }
