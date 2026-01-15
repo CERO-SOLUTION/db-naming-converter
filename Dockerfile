@@ -30,9 +30,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# XLSX 파일 다운로드
+# XLSX 파일 다운로드 (전체 스프레드시트 다운로드 - 모든 시트 포함)
 RUN apk add --no-cache curl && \
-    curl -L -f "https://docs.google.com/spreadsheets/d/1Q98LFRr_Ka1ZyBKUJ6u1vJD67F_JHIs8eovklCX_dNY/export?format=xlsx&gid=1543734301" -o BMS_테이블_정의_V1.1.xlsx && \
+    curl -L -f "https://docs.google.com/spreadsheets/d/1Q98LFRr_Ka1ZyBKUJ6u1vJD67F_JHIs8eovklCX_dNY/export?format=xlsx" -o BMS_테이블_정의_V1.1.xlsx && \
     ls -la BMS_테이블_정의_V1.1.xlsx
 
 # Next.js 익명 수집 끄기

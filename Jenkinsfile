@@ -2,7 +2,7 @@ pipeline {
   agent any
   environment {
     SHEET_ID = '1Q98LFRr_Ka1ZyBKUJ6u1vJD67F_JHIs8eovklCX_dNY'
-    GID = '1543734301'
+    GID = '593269429'
     XLSX_FILE = 'BMS_테이블_정의_V1.1.xlsx'
     DOCKER_PROJECT_NAME = 'cero'
     DOCKER_IMAGE_NAME = "db-naming-converter"
