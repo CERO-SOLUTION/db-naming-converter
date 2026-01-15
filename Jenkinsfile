@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'node:18-alpine'
-            args '-u root --shm-size=2g'  // 권한 + 메모리
+            args '-u root --shm-size=2g'
         }
     }
     environment {
@@ -11,12 +11,14 @@ pipeline {
         XLSX_FILE = 'BMS_테이블_정의_V1.1.xlsx'
     }
     stages {
-        stage('Setup pnpm') {
+        stage('Install curl & Setup') {
             steps {
                 sh '''
+                    apk add --no-cache curl
                     corepack enable
                     corepack prepare pnpm@latest --activate
                     pnpm --version
+                    curl --version
                 '''
             }
         }
@@ -27,6 +29,7 @@ pipeline {
                     curl -L -f "https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=xlsx&gid=${GID}" \\
                          -o ${XLSX_FILE}
                     ls -la ${XLSX_FILE}
+                    file ${XLSX_FILE}
                 """
             }
         }
@@ -35,15 +38,4 @@ pipeline {
                 sh '''
                     pnpm install --frozen-lockfile
                     pnpm run build:dict
-                    pnpm build
-                '''
-            }
-        }
-    }
-    post {
-        always {
-            archiveArtifacts artifacts: "${XLSX_FILE},data/**,.next/**,out/**", 
-                           allowEmptyArchive: true
-        }
-    }
-}
+                    pnpm b
