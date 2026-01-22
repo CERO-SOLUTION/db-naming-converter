@@ -2,7 +2,7 @@
   "meta": {
     "source": "BMS_테이블_정의_V1.1.xlsx",
     "sheet": "DB사전",
-    "generatedAt": "2026-01-22T05:28:27.674Z",
+    "generatedAt": "2026-01-22T05:36:37.227Z",
     "overrides": {
       "standard": []
     }
@@ -29580,7 +29580,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3291,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "다국어": {
       "abbr": "mltlg",
@@ -29589,7 +29589,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3292,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "막차": {
       "abbr": "lstcar",
@@ -29661,7 +29661,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3301,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "간격": {
       "abbr": "intvl",
@@ -29670,7 +29670,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3302,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "신뢰도": {
       "abbr": "con_off",
@@ -29688,7 +29688,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3304,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "헤더": {
       "abbr": "humr",
@@ -29697,16 +29697,16 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3305,
-      "numberCol": ""
+      "numberCol": "-"
     },
-    "d": {
+    "모드": {
       "abbr": "md",
       "englishName": "Mode",
       "description": "시스템이나 장치의 동작 방식 또는 상태. 운행모드·표시모드 등 작동 방식 구분에 적합",
       "domainName": "",
       "isFormat": false,
       "rowNo": 3306,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "대비": {
       "abbr": "vs",
@@ -29715,7 +29715,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3307,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "차차": {
       "abbr": "car",
@@ -29724,7 +29724,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3308,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "세번째": {
       "abbr": "thrd",
@@ -29787,7 +29787,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3316,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "총": {
       "abbr": "tot",
@@ -29796,7 +29796,7 @@
       "domainName": "",
       "isFormat": false,
       "rowNo": 3317,
-      "numberCol": ""
+      "numberCol": "-"
     },
     "맵핑": {
       "abbr": "mapng",
