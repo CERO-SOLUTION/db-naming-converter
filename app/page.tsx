@@ -130,7 +130,7 @@ export default function HomePage() {
   const hasAnySelection = selectedCount > 0;
   const hasAnyInput = Boolean(input || hasAnySelection);
   const combinedOutput = hasSelections && baseOutput
-    ? `${physicalCode}${logicalCode}_${businessCode}_${baseOutput}`.toLowerCase()
+    ? `${physicalCode}${logicalCode}${businessCode}${baseOutput}`.toLowerCase()
     : "";
   const finalOutput = hasSelections
     ? combinedOutput
