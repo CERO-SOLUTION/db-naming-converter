@@ -33,10 +33,11 @@ type Overrides = {
 };
 
 const SOURCE_FILE = path.join(process.cwd(), "BMS_테이블_정의_V1.1.xlsx");
-const SHEET_NAME = "DB사전";
+const SHEET_NAME = "DB사전(4차)";
 const OUTPUT_FILE = path.join(process.cwd(), "data", "dictionary.json");
 const OVERRIDE_FILE =
-  process.env.DICT_OVERRIDE_PATH ?? path.join(process.cwd(), "dictionary.overrides.json");
+  process.env.DICT_OVERRIDE_PATH ??
+  path.join(process.cwd(), "dictionary.overrides.json");
 
 const REQUIRED_HEADERS = [
   "번호",
@@ -47,7 +48,7 @@ const REQUIRED_HEADERS = [
   "형식단어여부",
   "공통표준도메인분류명",
   "이음동의어목록",
-  "금칙어목록"
+  "금칙어목록",
 ];
 
 function normalizeHeader(value: unknown): string {
@@ -67,14 +68,22 @@ function readSheetRows(): unknown[][] {
     throw new Error(`Source Excel file not found: ${SOURCE_FILE}`);
   }
 
-  const workbook = xlsx.readFile(SOURCE_FILE, { cellText: false, cellDates: false });
+  const workbook = xlsx.readFile(SOURCE_FILE, {
+    cellText: false,
+    cellDates: false,
+  });
   const sheet = workbook.Sheets[SHEET_NAME];
   if (!sheet) {
     const availableSheets = Object.keys(workbook.Sheets);
-    throw new Error(`Sheet not found: ${SHEET_NAME}. Available sheets: ${availableSheets.join(", ")}`);
+    throw new Error(
+      `Sheet not found: ${SHEET_NAME}. Available sheets: ${availableSheets.join(", ")}`,
+    );
   }
 
-  return xlsx.utils.sheet_to_json(sheet, { header: 1, defval: "" }) as unknown[][];
+  return xlsx.utils.sheet_to_json(sheet, {
+    header: 1,
+    defval: "",
+  }) as unknown[][];
 }
 
 function loadOverrides(): Overrides {
@@ -108,7 +117,9 @@ function main(): void {
   const headerRow = rows[0] ?? [];
   const headerIndex = getHeaderIndex(headerRow);
 
-  const missingHeaders = REQUIRED_HEADERS.filter((key) => !headerIndex.has(key));
+  const missingHeaders = REQUIRED_HEADERS.filter(
+    (key) => !headerIndex.has(key),
+  );
   if (missingHeaders.length > 0) {
     throw new Error(`Missing required headers: ${missingHeaders.join(", ")}`);
   }
@@ -157,7 +168,7 @@ function main(): void {
       domainName,
       isFormat,
       rowNo,
-      numberCol
+      numberCol,
     };
 
     const existingEntries = standardEntries.get(standard) ?? [];
@@ -175,7 +186,11 @@ function main(): void {
         const sourceInfo: SourceInfo = { standard, rowNo, numberCol };
         const existing = synonymSource.get(synonym);
         if (existing && existing.standard !== standard) {
-          synonymConflicts.push({ token: synonym, existing, incoming: sourceInfo });
+          synonymConflicts.push({
+            token: synonym,
+            existing,
+            incoming: sourceInfo,
+          });
           return;
         }
 
@@ -195,7 +210,11 @@ function main(): void {
         const sourceInfo: SourceInfo = { standard, rowNo, numberCol };
         const existing = forbiddenSource.get(forbidden);
         if (existing && existing.standard !== standard) {
-          forbiddenConflicts.push({ token: forbidden, existing, incoming: sourceInfo });
+          forbiddenConflicts.push({
+            token: forbidden,
+            existing,
+            incoming: sourceInfo,
+          });
           return;
         }
 
@@ -236,7 +255,7 @@ function main(): void {
           overrideErrors.push({
             standard,
             override: overrideAbbrRaw ?? "",
-            available: Array.from(abbrGroups.keys())
+            available: Array.from(abbrGroups.keys()),
           });
           continue;
         }
@@ -249,13 +268,13 @@ function main(): void {
           domainName: chosenEntry.domainName,
           isFormat: chosenEntry.isFormat,
           rowNo: chosenEntry.rowNo,
-          numberCol: chosenEntry.numberCol
+          numberCol: chosenEntry.numberCol,
         };
         resolvedStandardConflicts.push({
           standard,
           chosen: chosenEntry.abbr,
           entries,
-          usedOverride: true
+          usedOverride: true,
         });
         continue;
       }
@@ -268,13 +287,13 @@ function main(): void {
         domainName: fallbackEntry.domainName,
         isFormat: fallbackEntry.isFormat,
         rowNo: fallbackEntry.rowNo,
-        numberCol: fallbackEntry.numberCol
+        numberCol: fallbackEntry.numberCol,
       };
       resolvedStandardConflicts.push({
         standard,
         chosen: fallbackEntry.abbr,
         entries,
-        usedOverride: false
+        usedOverride: false,
       });
       continue;
     }
@@ -287,7 +306,7 @@ function main(): void {
       domainName: primary.domainName,
       isFormat: primary.isFormat,
       rowNo: primary.rowNo,
-      numberCol: primary.numberCol
+      numberCol: primary.numberCol,
     };
   }
 
@@ -295,7 +314,7 @@ function main(): void {
     console.warn("Standard word conflicts resolved:");
     resolvedStandardConflicts.forEach((conflict) => {
       console.warn(
-        `- ${conflict.standard} -> "${conflict.chosen}" (${conflict.usedOverride ? "override" : "first-row"})`
+        `- ${conflict.standard} -> "${conflict.chosen}" (${conflict.usedOverride ? "override" : "first-row"})`,
       );
       const grouped = new Map<string, StandardRowEntry[]>();
       conflict.entries.forEach((entry) => {
@@ -313,14 +332,18 @@ function main(): void {
     });
   }
 
-  if (overrideErrors.length || synonymConflicts.length || forbiddenConflicts.length) {
+  if (
+    overrideErrors.length ||
+    synonymConflicts.length ||
+    forbiddenConflicts.length
+  ) {
     if (overrideErrors.length) {
       console.error("Override mismatches detected:");
       overrideErrors.forEach((error) => {
         console.error(
           `- ${error.standard}: override "${error.override}" not found. Available: ${error.available
             .map((abbr) => `"${abbr}"`)
-            .join(", ")}`
+            .join(", ")}`,
         );
       });
     }
@@ -329,7 +352,7 @@ function main(): void {
       console.error("Synonym conflicts detected:");
       synonymConflicts.forEach((conflict) => {
         console.error(
-          `- "${conflict.token}": ${conflict.existing.standard} (row ${conflict.existing.rowNo}, 번호 ${conflict.existing.numberCol || "-"}) vs ${conflict.incoming.standard} (row ${conflict.incoming.rowNo}, 번호 ${conflict.incoming.numberCol || "-"})`
+          `- "${conflict.token}": ${conflict.existing.standard} (row ${conflict.existing.rowNo}, 번호 ${conflict.existing.numberCol || "-"}) vs ${conflict.incoming.standard} (row ${conflict.incoming.rowNo}, 번호 ${conflict.incoming.numberCol || "-"})`,
         );
       });
     }
@@ -338,7 +361,7 @@ function main(): void {
       console.error("Forbidden word conflicts detected:");
       forbiddenConflicts.forEach((conflict) => {
         console.error(
-          `- "${conflict.token}": ${conflict.existing.standard} (row ${conflict.existing.rowNo}, 번호 ${conflict.existing.numberCol || "-"}) vs ${conflict.incoming.standard} (row ${conflict.incoming.rowNo}, 번호 ${conflict.incoming.numberCol || "-"})`
+          `- "${conflict.token}": ${conflict.existing.standard} (row ${conflict.existing.rowNo}, 번호 ${conflict.existing.numberCol || "-"}) vs ${conflict.incoming.standard} (row ${conflict.incoming.rowNo}, 번호 ${conflict.incoming.numberCol || "-"})`,
         );
       });
     }
@@ -352,12 +375,12 @@ function main(): void {
       sheet: SHEET_NAME,
       generatedAt: new Date().toISOString(),
       overrides: {
-        standard: Object.keys(overrides.standard ?? {})
-      }
+        standard: Object.keys(overrides.standard ?? {}),
+      },
     },
     standard: standardMap,
     synonym: synonymMap,
-    forbidden: forbiddenMap
+    forbidden: forbiddenMap,
   };
 
   fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
