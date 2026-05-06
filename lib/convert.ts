@@ -38,6 +38,8 @@ export type ConvertResult = {
   meta?: DictionaryMeta;
 };
 
+export type ConvertDirection = "koToAbbr" | "abbrToKo";
+
 export function normalizeInputToken(token: string): string {
   return token.trim().replace(/\s+/g, "").toLowerCase();
 }
@@ -52,6 +54,87 @@ function tokenizeInput(input: string): string[] {
     .split(/[^\p{L}\p{N}]+/u)
     .map((token) => token.trim())
     .filter(Boolean);
+}
+
+function normalizeAbbrToken(token: string): string {
+  return token.trim().replace(/[\s_]+/g, "").toLowerCase();
+}
+
+function tokenizeAbbrInput(input: string): string[] {
+  // abbr 입력은 보통 snake_case라서 `_`/구두점을 모두 구분자로 허용합니다.
+  return input
+    .split(/[^a-zA-Z0-9]+/g)
+    .map((token) => token.trim())
+    .filter(Boolean);
+}
+
+function buildAbbrIndex(dict: NormalizedDictionary): Map<string, { standard: string }> {
+  const map = new Map<string, { standard: string }>();
+  Object.entries(dict.standard ?? {}).forEach(([standard, entry]) => {
+    const key = normalizeAbbrToken(entry.abbr);
+    if (!key) return;
+    // abbr 충돌이 있을 수 있으므로 최초 등록을 우선합니다.
+    if (!map.has(key)) {
+      map.set(key, { standard });
+    }
+  });
+  return map;
+}
+
+export function convertAbbrToKorean(input: string, dict: NormalizedDictionary): ConvertResult {
+  const tokens: TokenResult[] = [];
+  const warnings: Warning[] = [];
+  const outputTokens: string[] = [];
+  const descriptionTokens: string[] = [];
+
+  const abbrIndex = buildAbbrIndex(dict);
+  const rawTokens = tokenizeAbbrInput(input);
+
+  rawTokens.forEach((raw) => {
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    const normalized = normalizeAbbrToken(trimmed);
+    if (!normalized) return;
+
+    const match = abbrIndex.get(normalized);
+    if (!match) {
+      warnings.push({ type: "unknown", token: trimmed });
+      tokens.push({
+        input: trimmed,
+        normalized,
+        output: trimmed,
+        kind: "unknown",
+      });
+      outputTokens.push(trimmed);
+      descriptionTokens.push(trimmed);
+      return;
+    }
+
+    const entry = dict.standard[match.standard];
+    tokens.push({
+      input: trimmed,
+      normalized,
+      output: match.standard,
+      kind: "standard",
+      numberCol: entry?.numberCol,
+      standard: match.standard,
+      abbr: entry?.abbr,
+      englishName: entry?.englishName,
+      description: entry?.description,
+      domainName: entry?.domainName,
+      isFormat: entry?.isFormat,
+    });
+    outputTokens.push(match.standard);
+    descriptionTokens.push(entry?.englishName ?? match.standard);
+  });
+
+  return {
+    output: outputTokens.join(""),
+    description: descriptionTokens.join(" "),
+    warnings,
+    tokens,
+    meta: dict.meta,
+  };
 }
 
 function segmentIntoKnownTokens(

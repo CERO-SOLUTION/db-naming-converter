@@ -3,6 +3,8 @@
 import type { ConvertResult, WarningType } from "@/lib/convert";
 import { useEffect, useMemo, useState } from "react";
 
+type ConvertDirection = "koToAbbr" | "abbrToKo";
+
 const WARNING_LABELS: Record<WarningType, string> = {
   forbidden: "금칙어",
   synonym: "동의어",
@@ -48,6 +50,7 @@ function uniqueTokens(tokens: string[]): string[] {
 
 export default function HomePage() {
   const [input, setInput] = useState("");
+  const [direction, setDirection] = useState<ConvertDirection>("koToAbbr");
   const [physicalCode, setPhysicalCode] = useState("");
   const [logicalCode, setLogicalCode] = useState("");
   const [businessCode, setBusinessCode] = useState("");
@@ -71,7 +74,7 @@ export default function HomePage() {
         const response = await fetch("/api/convert", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ input }),
+          body: JSON.stringify({ input, direction }),
           signal: controller.signal
         });
 
@@ -97,7 +100,7 @@ export default function HomePage() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [input]);
+  }, [input, direction]);
 
   const warnings = result?.warnings ?? [];
   const tokens = result?.tokens ?? [];
@@ -129,8 +132,8 @@ export default function HomePage() {
   const hasSelections = selectedCount === 3;
   const hasAnySelection = selectedCount > 0;
   const hasAnyInput = Boolean(input || hasAnySelection);
-  const combinedOutput = hasSelections && baseOutput
-    ? `${physicalCode}${logicalCode}${businessCode}${baseOutput}`.toLowerCase()
+  const combinedOutput = direction === "koToAbbr" && hasSelections && baseOutput
+    ? `${physicalCode}${logicalCode}_${businessCode}_${baseOutput}`.toLowerCase()
     : "";
   const finalOutput = hasSelections
     ? combinedOutput
@@ -191,6 +194,24 @@ export default function HomePage() {
               <div className="field-header field-header--input">
                 <label htmlFor="input">입력</label>
                 <div className="header-controls">
+                  <div className="select-row">
+                    <div className="select-inline">
+                      <label htmlFor="direction">
+                        <span className="tooltip" data-tooltip="한글→약어 또는 약어→한글 변환 방향">
+                          방향
+                          <span className="tooltip-indicator" aria-hidden="true" />
+                        </span>
+                      </label>
+                      <select
+                        id="direction"
+                        value={direction}
+                        onChange={(event) => setDirection(event.target.value as ConvertDirection)}
+                      >
+                        <option value="koToAbbr">한글 → 약어</option>
+                        <option value="abbrToKo">약어 → 한글</option>
+                      </select>
+                    </div>
+                  </div>
                   <div className="select-row">
                     <div className="select-inline">
                       <label htmlFor="physical">

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { convertInput } from "@/lib/convert";
+import { convertAbbrToKorean, convertInput, type ConvertDirection } from "@/lib/convert";
 import { getDictionary } from "@/lib/dict";
 
 export async function POST(request: Request) {
@@ -10,7 +10,10 @@ export async function POST(request: Request) {
     }
 
     const dict = getDictionary();
-    const result = convertInput(body.input, dict);
+    const direction = (body.direction ?? "koToAbbr") as ConvertDirection;
+    const result = direction === "abbrToKo"
+      ? convertAbbrToKorean(body.input, dict)
+      : convertInput(body.input, dict);
     return NextResponse.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error";

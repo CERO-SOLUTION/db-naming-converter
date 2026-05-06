@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { convertInput } from "./convert";
+import { convertAbbrToKorean, convertInput } from "./convert";
 import { normalizeDictionary, type Dictionary } from "./dict-utils";
 
 const rawDictionary: Dictionary = {
@@ -105,5 +105,13 @@ describe("convertInput", () => {
     const result = convertInput("알수없음", dict);
     expect(result.output).toBe("unk");
     expect(result.warnings[0]?.type).toBe("unknown");
+  });
+});
+
+describe("convertAbbrToKorean", () => {
+  it("converts snake_case abbr into concatenated Korean standard words", () => {
+    const result = convertAbbrToKorean("stats_dt", dict);
+    expect(result.output).toBe("통계일시");
+    expect(result.warnings.length).toBe(0);
   });
 });
