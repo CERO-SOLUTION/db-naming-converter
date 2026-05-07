@@ -2,7 +2,7 @@
   "meta": {
     "source": "BMS_테이블_정의_V1.1.xlsx",
     "sheet": "DB사전(4차)",
-    "generatedAt": "2026-05-06T07:00:42.355Z",
+    "generatedAt": "2026-05-07T00:16:12.826Z",
     "overrides": {
       "standard": []
     }
@@ -30963,10 +30963,37 @@
       "abbr": "cam",
       "englishName": "Camera",
       "description": "영상이나 이미지를 촬영·수집하는 장치",
-      "domainName": "",
+      "domainName": "-",
       "isFormat": false,
       "rowNo": 3453,
-      "numberCol": ""
+      "numberCol": "3452"
+    },
+    "팬틸트": {
+      "abbr": "pantilt",
+      "englishName": "Pan-Tilt",
+      "description": "카메라나 장비가 좌우(Pan), 상하(Tilt)로 움직일 수 있는 기능 또는 구조",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3454,
+      "numberCol": "3453"
+    },
+    "zoom": {
+      "abbr": "zoom",
+      "englishName": "Zoom",
+      "description": "카메라나 장비에서 화면을 확대 또는 축소하는 기능",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3455,
+      "numberCol": "3454"
+    },
+    "프리셋": {
+      "abbr": "preset",
+      "englishName": "Preset",
+      "description": "미리 설정해 둔 값, 위치, 상태 등을 저장해두고 재사용하는 기능",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3456,
+      "numberCol": "3455"
     }
   },
   "synonym": {
