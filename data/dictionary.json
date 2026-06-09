@@ -2,7 +2,7 @@
   "meta": {
     "source": "BMS_테이블_정의_V1.1.xlsx",
     "sheet": "DB사전(4차)",
-    "generatedAt": "2026-05-26T00:39:17.286Z",
+    "generatedAt": "2026-06-09T23:10:54.231Z",
     "overrides": {
       "standard": []
     }
@@ -23309,10 +23309,10 @@
       "rowNo": 2592,
       "numberCol": "2591"
     },
-    "질병": {
+    "DSS": {
       "abbr": "dss",
-      "englishName": "Disease",
-      "description": "疾病. 몸의 온갖 병",
+      "englishName": "Digital Surveillance System",
+      "description": "영상 감시 및 관제를 위한 통합 시스템. 카메라 영상 수집, 저장, 모니터링, 이벤트 관리 등의 기능을 제공",
       "domainName": "-",
       "isFormat": false,
       "rowNo": 2593,
@@ -31066,6 +31066,42 @@
       "isFormat": false,
       "rowNo": 3463,
       "numberCol": "3462"
+    },
+    "인공지능": {
+      "abbr": "ai",
+      "englishName": "Artificial Intelligence",
+      "description": "컴퓨터가 인간의 학습, 추론, 판단 등의 지능적 기능을 수행할 수 있도록 하는 기술",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3464,
+      "numberCol": "3463"
+    },
+    "레이트": {
+      "abbr": "rate",
+      "englishName": "Rate",
+      "description": "일정 시간 또는 기준 단위에 대한 발생량, 처리량, 비율 또는 속도를 의미함",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3465,
+      "numberCol": "3464"
+    },
+    "라이브": {
+      "abbr": "live",
+      "englishName": "Live",
+      "description": "현재 시점의 영상 또는 데이터를 지연 없이 실시간으로 제공하는 상태",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3467,
+      "numberCol": "3466"
+    },
+    "비트": {
+      "abbr": "bit",
+      "englishName": "Bit (Binary Digit)",
+      "description": "디지털 데이터의 최소 정보 단위. 0 또는 1의 값을 가지며 데이터 저장 및 전송의 기본 단위로 사용된다.",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3468,
+      "numberCol": "3467"
     }
   },
   "synonym": {
