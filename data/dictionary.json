@@ -2,7 +2,7 @@
   "meta": {
     "source": "BMS_테이블_정의_V1.1.xlsx",
     "sheet": "DB사전(4차)",
-    "generatedAt": "2026-06-09T23:10:54.231Z",
+    "generatedAt": "2026-06-11T23:37:43.957Z",
     "overrides": {
       "standard": []
     }
@@ -31102,6 +31102,33 @@
       "isFormat": false,
       "rowNo": 3468,
       "numberCol": "3467"
+    },
+    "RTSP": {
+      "abbr": "rtsp",
+      "englishName": "Real Time Streaming Protocol",
+      "description": "실시간 영상 및 음성 스트리밍을 위한 네트워크 프로토콜",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3469,
+      "numberCol": "3468"
+    },
+    "녹화": {
+      "abbr": "rec",
+      "englishName": "Recording",
+      "description": "카메라 영상 또는 음성 데이터를 저장 매체에 기록하는 행위 또는 상태",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3470,
+      "numberCol": "3469"
+    },
+    "WebRTC": {
+      "abbr": "webrtc",
+      "englishName": "Web Real-Time Communication",
+      "description": "웹 브라우저 및 애플리케이션 간에 플러그인 없이 실시간 음성, 영상, 데이터 통신을 제공하는 오픈소스 통신 기술",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3471,
+      "numberCol": "3470"
     }
   },
   "synonym": {
