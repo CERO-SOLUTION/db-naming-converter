@@ -2,7 +2,7 @@
   "meta": {
     "source": "BMS_테이블_정의_V1.1.xlsx",
     "sheet": "DB사전(4차)",
-    "generatedAt": "2026-06-11T23:37:43.957Z",
+    "generatedAt": "2026-06-29T07:36:20.591Z",
     "overrides": {
       "standard": []
     }
@@ -1673,7 +1673,7 @@
       "rowNo": 186,
       "numberCol": "185"
     },
-    "검출": {
+    "판단": {
       "abbr": "dtct",
       "englishName": "Detection",
       "description": "檢出. 화학 분석에서, 물질 속에 어떤 화학 성분이나 미생물이 있는지를 검사하여 확인하는 일",
@@ -31129,6 +31129,24 @@
       "isFormat": false,
       "rowNo": 3471,
       "numberCol": "3470"
+    },
+    "환경설정": {
+      "abbr": "cnfg",
+      "englishName": "Configuration",
+      "description": "시스템 또는 프로그램의 동작을 제어하기 위한 설정 정보",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3472,
+      "numberCol": "3471"
+    },
+    "헤딩": {
+      "abbr": "hdg",
+      "englishName": "Heading",
+      "description": "차량 또는 정류장의 진행 방향을 나타내는 방위각(0~359°)",
+      "domainName": "-",
+      "isFormat": false,
+      "rowNo": 3473,
+      "numberCol": "3472"
     }
   },
   "synonym": {
